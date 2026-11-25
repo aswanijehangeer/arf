@@ -16,3 +16,6 @@ branch/
 /Meta/
 .scratch/
 TODO.md
+
+/.quarto/
+**/*.quarto_ipynb
