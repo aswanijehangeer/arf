@@ -1,59 +1,92 @@
-# arf: Adversarial random forests <a href='https://bips-hb.github.io/arf/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
-<!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/arf)](https://cran.r-project.org/package=arf)
-[![R-CMD-check](https://github.com/bips-hb/arf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bips-hb/arf/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/bips-hb/arf/graph/badge.svg)](https://app.codecov.io/gh/bips-hb/arf)
-<!-- badges: end -->
+## ARF Explorer — Interactive Shiny Application
 
-## Introduction
-Adversarial random forests (ARFs) recursively partition data into fully factorized leaves, where features are jointly independent. The procedure is iterative, with alternating rounds of generation and discrimination. Data become increasingly realistic at each round, until original and synthetic samples can no longer be reliably distinguished. This is useful for several unsupervised learning tasks, such as density estimation and data synthesis. Methods for both are implemented in this package. ARFs naturally handle unstructured data with mixed continuous and categorical covariates. They inherit many of the benefits of RFs, including speed, flexibility, and solid performance with default parameters. 
+This personal fork extends the original `arf` package with
+**ARF Explorer**, an interactive Shiny application for exploring
+synthetic tabular data generation and statistical evaluation using
+adversarial random forests.
 
+The application provides a graphical interface for experimenting
+with ARF, understanding synthetic data generation, and comparing
+the statistical properties of real and synthetic datasets.
 
-## Installation
-The `arf` package is available on `CRAN`:
-```R
-install.packages("arf")
-```
-To install the development version from GitHub using `devtools`, run:
-```R
-devtools::install_github("bips-hb/arf")
-```
+### Application preview
 
-## Examples
-Using Fisher's iris dataset, we train an ARF and estimate distribution parameters:
-```R
-# Train the ARF
-arf <- adversarial_rf(iris)
+<p align="center">
+  <img src="man/figures/arf-explorer.png"
+       alt="ARF Explorer Shiny application"
+       width="100%">
+</p>
 
-# Estimate distribution parameters
-psi <- forde(arf, iris)
+### Installation and launch
+
+Install this extended version of `arf` from GitHub:
+
+```r
+devtools::install_github("aswanijehangeer/arf")
 ```
 
-### Density estimation
-To estimate log-likelihoods:
-```R
-mean(lik(arf, psi, iris))
+Install the optional application dependencies:
+
+```r
+install.packages(c("shiny", "writexl"))
 ```
 
-### Generative modeling
-To generate 100 synthetic samples: 
-```R
-forge(psi, 100)
+Launch the application directly from R:
+
+```r
+arf::run_explorer()
 ```
 
-### Conditional expectations
-To estimate the mean of some variable(s), optionally conditioned on some event(s):
-```R
-evi <- data.frame(Species = "setosa")
-expct(psi, query = "Sepal.Length", evidence = evi)
-```
+### Current features
 
-For more detailed examples, see the package [vignette](https://bips-hb.github.io/arf/articles/vignette.html).
+- **Data exploration:** Explore numerical and categorical variables
+  using built-in example datasets.
+- **Synthetic data generation:** Generate synthetic data using ARF
+  with configurable model parameters and reproducible random seeds.
+- **Training and holdout separation:** Evaluate synthetic data
+  against unseen real observations.
+- **Baseline comparisons:** Compare ARF-generated data with
+  independent-column sampling and real training data.
+- **Statistical evaluation:** Assess marginal distributions and
+  numerical dependencies.
+- **Interactive visualisations:** Compare distributions, empirical
+  cumulative distribution functions and scatter plots.
+- **Data export:** Download synthetic data as CSV and complete
+  experiment results as an Excel workbook.
 
-## Python library
-A Python implementation of ARF, `arfpy`, is available on [PyPI](https://pypi.org/project/arfpy/). For the development version, see [here](https://github.com/bips-hb/arfpy).
+### Evaluation metrics
 
-## References
-* Watson, D. S., Blesch, K., Kapar, J. & Wright, M. N. (2023). Adversarial random forests for density estimation and generative modeling. In *Proceedings of the 26th International Conference on Artificial Intelligence and Statistics*. Link [here](https://proceedings.mlr.press/v206/watson23a.html).
-* Blesch, K., Koenen, N., Kapar, J., Golchian, P., Burk, L., Loecher, M. & Wright, M. N. (2025). Conditional feature importance with generative modeling using adversarial random forests. In *Proceedings of the 39th AAAI Conference on Artificial Intelligence*. Link [here](https://arxiv.org/abs/2501.11178).
+| Evaluation level | Metric | Variable type |
+|---|---|---|
+| Univariate | Kolmogorov–Smirnov distance | Numerical |
+| Univariate | Wasserstein distance | Numerical |
+| Univariate | Total Variation distance | Categorical |
+| Bivariate | Pearson correlation difference | Numerical pairs |
+
+The current evaluation focuses on statistical fidelity. Predictive
+utility, privacy assessment, mixed-type dependencies and
+multivariate evaluation are potential future extensions.
+
+### Experiment export
+
+The application supports exporting a complete experiment as an
+Excel workbook containing four worksheets:
+
+- Synthetic data
+- Univariate evaluation
+- Dependency evaluation
+- Experiment settings
+
+### Development status
+
+ARF Explorer is an experimental and educational extension maintained
+independently in this personal fork. It is intended to support
+interactive learning and experimentation with synthetic data
+generation and evaluation.
+
+The original ARF generation and density estimation algorithms
+remain unchanged.
+
+This application is not currently part of the official ARF package
+or its CRAN release.
